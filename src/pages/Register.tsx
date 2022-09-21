@@ -1,18 +1,47 @@
 import { TextField, Typography, Button } from "@mui/material";
 import "./register.css";
 import { useForm, SubmitHandler } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import { app } from "../firebaseConfig";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { useNavigate } from "react-router";
 
 interface RegisterInput {
   email: string;
   password: string;
-  fullName: string;
 }
 
+const schema = yup
+  .object({
+    email: yup.string().email().required(),
+    password: yup.string().required(),
+  })
+  .required();
+
 const Register: React.FC = () => {
-  const { register, handleSubmit } = useForm<RegisterInput>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterInput>({
+    resolver: yupResolver(schema),
+  });
+
+  const navigate = useNavigate();
+
+  const auth = getAuth(app);
 
   const onSubmit: SubmitHandler<RegisterInput> = (data) => {
     console.log(data);
+    createUserWithEmailAndPassword(auth, data.email, data.password)
+      .then((response) => {
+        navigate("/login");
+      })
+      .catch((e) => {
+        alert(e.message);
+      });
   };
 
   return (
@@ -26,18 +55,15 @@ const Register: React.FC = () => {
             Sign Up
           </Typography>
         </div>
-        <TextField
-          label="Full Name"
-          fullWidth
-          className="form-control"
-          {...register("fullName")}
-        />
+
         <TextField
           label="Email"
           fullWidth
           className="form-control"
           {...register("email")}
           type="email"
+          error={!!errors.email}
+          helperText={errors?.email?.message}
         />
         <TextField
           label="Password"
@@ -45,9 +71,16 @@ const Register: React.FC = () => {
           className="form-control"
           {...register("password")}
           type="password"
+          error={!!errors.password}
+          helperText={errors?.password?.message}
         />
 
-        <Button className="form-control" variant="contained" fullWidth>
+        <Button
+          type="submit"
+          className="form-control"
+          variant="contained"
+          fullWidth
+        >
           SIGN UP
         </Button>
       </form>

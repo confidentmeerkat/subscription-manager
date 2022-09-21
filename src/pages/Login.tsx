@@ -1,6 +1,8 @@
 import { TextField, Typography, Button } from "@mui/material";
 import "./login.css";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { app } from "../firebaseConfig";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 interface LoginInput {
   email: string;
@@ -10,8 +12,15 @@ interface LoginInput {
 const Login: React.FC = () => {
   const { register, handleSubmit } = useForm<LoginInput>();
 
+  const auth = getAuth(app);
+
   const onSubmit: SubmitHandler<LoginInput> = (data) => {
     console.log(data);
+    signInWithEmailAndPassword(auth, data.email, data.password).then(
+      (response) => {
+        console.log(response.user);
+      }
+    );
   };
 
   return (
@@ -25,7 +34,7 @@ const Login: React.FC = () => {
             Sign In
           </Typography>
         </div>
-        
+
         <TextField
           label="Email"
           fullWidth
@@ -41,7 +50,7 @@ const Login: React.FC = () => {
           type="password"
         />
 
-        <Button className="form-control" variant="contained" fullWidth>
+        <Button type="submit" className="form-control" variant="contained" fullWidth>
           SIGN IN
         </Button>
       </form>
