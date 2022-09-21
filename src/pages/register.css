@@ -1,0 +1,3 @@
+.form-control {
+  @apply !mt-2 !mb-1;
+}
