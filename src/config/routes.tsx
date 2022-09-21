@@ -6,6 +6,7 @@ interface Route {
   path: string;
   element: JSX.Element;
   settings?: any;
+  auth?: boolean;
 }
 
 const onlyMain = {
@@ -36,9 +37,7 @@ const routesConfig: Route[] = [
   {
     path: "*",
     element: <NotExists />,
-    settings: {
-      layout: onlyMain,
-    },
+    auth: true,
   },
 ];
 

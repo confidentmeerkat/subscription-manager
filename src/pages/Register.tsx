@@ -7,6 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { app } from "../firebaseConfig";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 interface RegisterInput {
   email: string;
@@ -34,7 +35,6 @@ const Register: React.FC = () => {
   const auth = getAuth(app);
 
   const onSubmit: SubmitHandler<RegisterInput> = (data) => {
-    console.log(data);
     createUserWithEmailAndPassword(auth, data.email, data.password)
       .then((response) => {
         navigate("/login");
@@ -83,6 +83,10 @@ const Register: React.FC = () => {
         >
           SIGN UP
         </Button>
+
+        <Link className="form-control text-blue-500" to="/login">
+          <u>SignIn</u>
+        </Link>
       </form>
     </div>
   );

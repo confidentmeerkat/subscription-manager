@@ -1,8 +1,14 @@
+import { useEffect } from "react";
 import { TextField, Typography, Button } from "@mui/material";
 import "./login.css";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { app } from "../firebaseConfig";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../store";
+import { useNavigate } from "react-router";
+import { login } from "../store/features/auth";
+import { Link } from "react-router-dom";
 
 interface LoginInput {
   email: string;
@@ -12,15 +18,27 @@ interface LoginInput {
 const Login: React.FC = () => {
   const { register, handleSubmit } = useForm<LoginInput>();
 
+  const authInfo = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (authInfo.token) navigate("/");
+  }, [authInfo]);
+
   const auth = getAuth(app);
 
-  const onSubmit: SubmitHandler<LoginInput> = (data) => {
-    console.log(data);
-    signInWithEmailAndPassword(auth, data.email, data.password).then(
-      (response) => {
-        console.log(response.user);
-      }
+  const onSubmit: SubmitHandler<LoginInput> = async (data) => {
+    const { user } = await signInWithEmailAndPassword(
+      auth,
+      data.email,
+      data.password
     );
+
+    const token = await user.getIdToken();
+    const email = user.email || "";
+    dispatch(login({ token, email }));
   };
 
   return (
@@ -34,7 +52,6 @@ const Login: React.FC = () => {
             Sign In
           </Typography>
         </div>
-
         <TextField
           label="Email"
           fullWidth
@@ -49,10 +66,17 @@ const Login: React.FC = () => {
           {...register("password")}
           type="password"
         />
-
-        <Button type="submit" className="form-control" variant="contained" fullWidth>
+        <Button
+          type="submit"
+          className="form-control"
+          variant="contained"
+          fullWidth
+        >
           SIGN IN
         </Button>
+        <Link className="form-control text-blue-500" to="/register">
+          <u>SignUp</u>
+        </Link>
       </form>
     </div>
   );
