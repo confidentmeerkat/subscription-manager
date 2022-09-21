@@ -16,6 +16,10 @@ const onlyMain = {
 
 const routesConfig: Route[] = [
   {
+    path: "/",
+    element: <h1>Welcome</h1>,
+  },
+  {
     path: "/register",
     element: <Register />,
     settings: {
