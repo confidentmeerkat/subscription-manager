@@ -1,19 +1,29 @@
 import {
+  createTheme,
   Divider,
   Drawer,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
+  ThemeProvider,
   Toolbar,
 } from "@mui/material";
 import { useMemo } from "react";
 import { navigationConfig } from "../config/navigation";
 import { Link } from "react-router-dom";
 
-const drawerWidth = 240;
+interface PropTypes {
+  width: number;
+}
 
-export default function Sidebar() {
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
+
+const Sidebar: React.FC<PropTypes> = ({ width }) => {
   const navItems = useMemo(() => {
     return navigationConfig.map(({ label, to, icon: ItemIcon }) => (
       <ListItem
@@ -33,22 +43,26 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <Drawer
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: drawerWidth,
-          boxSizing: "border-box",
-        },
-      }}
-      variant="permanent"
-      anchor="left"
-    >
-      <Toolbar>Subscription Manager</Toolbar>
-      <Divider />
+    <ThemeProvider theme={darkTheme}>
+      <Drawer
+        sx={{
+          width,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width,
+            boxSizing: "border-box",
+          },
+        }}
+        variant="permanent"
+        anchor="left"
+      >
+        <Toolbar>Subscription Manager</Toolbar>
+        <Divider />
 
-      <List>{navItems}</List>
-    </Drawer>
+        <List>{navItems}</List>
+      </Drawer>
+    </ThemeProvider>
   );
-}
+};
+
+export default Sidebar;
